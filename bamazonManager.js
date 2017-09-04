@@ -18,7 +18,7 @@ function userInput() {
             name: "products",
             type: 'list',
             message: "Select one of the following choices: ",
-            choices: ['view products for sale','view low inventory']
+            choices: ['view products for sale', 'view low inventory', 'add to inventory']
         }
 
     ]).then(function(answers) {
@@ -45,6 +45,34 @@ function selectLowInventory() {
     });
 }
 
+function addToStock() {
+    inquirer.prompt([{
+            name: "add",
+            message: "pick id of the product you want to add to: "
+        },
+        {
+            name: 'quantity',
+            message: 'pick the quantity you want to add: '
+        }
+
+    ]).then(function(answers) {
+            var query1 = connection.query("UPDATE products SET? WHERE?", [
+                { stock_quantity: parseInt(answers.quantity) },
+                { id: parseInt(answers.add) }
+            ], function(err, res1) {
+                // console.log(res1.affectedRows + " record(s) updated");
+            });
+        // }
+        console.log(query1.sql);
+
+        // });
+
+
+    });
+
+}
+
+
 function runResults(userAnswers) {
     switch (userAnswers) {
         case 'view products for sale':
@@ -52,6 +80,9 @@ function runResults(userAnswers) {
             break;
         case 'view low inventory':
             selectLowInventory()
+            break;
+        case 'add to inventory':
+            addToStock()
             break;
     }
 }
