@@ -39,20 +39,22 @@ function userChooseProduct() {
         connection.query("SELECT * FROM  products WHERE id=" + parseInt(answers.id), function(err, res) {
             for (var i = 0; i < res.length; i++) {
                 console.log(res[i].id + " | " + res[i].product_name + " | " + res[i].price + "$" + " | X" + parseInt(answers.numUnits));
-                updateStock(res[i].stock_quantity, answers.numUnits, answers.id);
+                updateStock(res[i].stock_quantity, answers.numUnits, answers.id,res[i].price);
                 console.log("Your total is: " + res[i].price * parseInt(answers.numUnits) + "$");
             }
         });
     });
 }
 
-function updateStock(stock, userPurchase, id) {
+function updateStock(stock, userPurchase, id,price) {
+	var sale = 0;
+	sale += price;
     var result = stock - userPurchase;
     if (result <= 0) {
         console.log("Insufficient stock");
         setTimeout(userChooseProduct(), 1000 * 3);
     } else {
-        connection.query("UPDATE products SET stock_quantity=" + result + " WHERE id=" + id),
+        connection.query("UPDATE products SET stock_quantity=" + result +", product_sales="+sale+ " WHERE id=" + id),
             function(err, res) {
                 return console.log(res[0].stock_quantity);
             }

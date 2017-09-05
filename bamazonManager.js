@@ -18,7 +18,7 @@ function userInput() {
             name: "products",
             type: 'list',
             message: "Select one of the following choices: ",
-            choices: ['view products for sale', 'view low inventory', 'add to inventory']
+            choices: ['view products for sale', 'view low inventory', 'add to inventory','add new product']
         }
 
     ]).then(function(answers) {
@@ -71,6 +71,37 @@ function addToStock() {
     });
 
 }
+function addProduct(){
+	inquirer.prompt([{
+            name: "product",
+            message: "what product name do you want to add? "
+        },
+        {
+           name: 'department',
+           message:'what department is this in? '
+        },
+        {
+           name: 'price',
+           message:'what price is it? '
+        },
+        {
+            name: 'stock',
+            message: 'pick the quantity you want to add: '
+        }
+
+    ]).then(function(answers) {
+	var query = connection.query("INSERT INTO products SET?",{
+		product_name:answers.product,
+		department_name:answers.department,
+		price:answers.price,
+		stock_quantity:answers.stock
+	}, function(err, res1) {
+                // console.log(res1.affectedRows + " record(s) updated");
+            });
+        // }
+        console.log(query.sql);
+    });
+}
 
 
 function runResults(userAnswers) {
@@ -83,6 +114,9 @@ function runResults(userAnswers) {
             break;
         case 'add to inventory':
             addToStock()
+            break;
+        case 'add new product':
+            addProduct()
             break;
     }
 }
