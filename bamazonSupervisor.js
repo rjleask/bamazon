@@ -29,12 +29,33 @@ function userInput() {
 
 function joinTables() {
 
-    connection.query('SELECT departments.department_id,departments.department_name,products.product_sales FROM departments LEFT JOIN products ON (departments.department_id = products.id)', function(err, res) {
+    connection.query('SELECT departments.department_id,products.department_name,SUM(products.product_sales) AS department_sales,departments.over_head_costs, (SUM(products.product_sales) - departments.over_head_costs) AS total_profit FROM products INNER JOIN departments ON(products.department_name = departments.department_name) GROUP BY products.department_name', function(err, res) {
         // console.log(res);
-        for(var i=0; i<res.length;i++){
-        	console.log(res[i].department_id+" | "+res[i].department_name+" | "+res[i].product_sales);
+        for (var i = 0; i < res.length; i++) {
+            console.log(res[i].department_id + " | " + res[i].department_name + " | " + res[i].over_head_costs + " over head | " + res[i].department_sales +" dept sales | " + res[i].total_profit+" in net sales");
         }
 
+    });
+}
+
+function createDepartment() {
+    inquirer.prompt([{
+
+            name: 'department',
+            message: 'what department are you adding? '
+        },
+        {
+            name: 'over',
+            message: 'what are the over head costs of the new department? '
+        }
+
+    ]).then(function(answers) {
+        var query = connection.query('INSERT INTO departments SET?', {
+            department_name: answers.department,
+            over_head_costs: answers.over
+        }, function(err, res) {
+        });
+        console.log(query.sql);
     });
 }
 
@@ -44,6 +65,7 @@ function runUserInput(userAnswers) {
             joinTables();
             break;
         case 'create new department':
+            createDepartment();
             break;
     }
 }
